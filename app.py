@@ -5,11 +5,16 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
+# --- CONFIGURASI GOOGLE SHEETS ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
 if "gcp_service_account" in st.secrets:
-    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+    # Memperbaiki format private_key agar kebal error baris baru
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
 else:
+    # Cadangan kalau jalan di laptop
     creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
 
 client = gspread.authorize(creds)
@@ -232,6 +237,7 @@ elif menu == "⚙️ Setup System":
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
 
         st.markdown(html_s, unsafe_allow_html=True)
+
 
 
 
