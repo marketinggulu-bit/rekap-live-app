@@ -8,12 +8,12 @@ import plotly.express as px
 # --- CONFIGURASI GOOGLE SHEETS (JALUR GITHUB DIRECT) ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
-# Langsung baca file dari GitHub tanpa perlu setting Secrets lagi
+# Pastikan file "credentials.json" ada di folder yang sama di GitHub
 try:
     creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
     client = gspread.authorize(creds)
 except Exception as e:
-    st.error(f"Waduh sis, filenya nggak kebaca: {e}")
+    st.error(f"Gagal membaca file kunci: {e}")
     st.stop()
 
 SHEET_NAME = "Rekap Live"
@@ -234,6 +234,7 @@ elif menu == "⚙️ Setup System":
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
 
         st.markdown(html_s, unsafe_allow_html=True)
+
 
 
 
