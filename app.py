@@ -5,10 +5,14 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
+scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+
 if "gcp_service_account" in st.secrets:
     creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 else:
     creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+
+client = gspread.authorize(creds)
 
 SHEET_NAME = "Rekap Live"
 spreadsheet = client.open(SHEET_NAME)
