@@ -5,20 +5,17 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
-# --- CONFIGURASI GOOGLE SHEETS ---
+# --- CONFIGURASI GOOGLE SHEETS (VERSI ONLINE KEBAL ERROR) ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
-# Menggunakan st.secrets untuk keamanan saat online
 if "gcp_service_account" in st.secrets:
-    creds_info = st.secrets["gcp_service_account"]
-    creds = Credentials.from_service_account_info(creds_info, scopes=scope)
+    # Kita bersihkan private_key dari karakter \n yang suka bikin error
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
 else:
-    # Cadangan untuk jalankan di laptop
-    try:
-        creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
-    except:
-        st.error("File credentials.json tidak ditemukan atau Secrets belum diatur!")
-        st.stop()
+    # Cadangan kalau di laptop
+    creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
 
 client = gspread.authorize(creds)
 SHEET_NAME = "Rekap Live"
@@ -239,5 +236,6 @@ elif menu == "⚙️ Setup System":
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
 
         st.markdown(html_s, unsafe_allow_html=True)
+
 
 
