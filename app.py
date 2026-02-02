@@ -5,16 +5,10 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
-# --- CONFIGURASI GOOGLE SHEETS (JALUR GITHUB DIRECT) ---
-scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-
-# Mencoba membaca file credentials.json langsung dari folder GitHub
-try:
+if "gcp_service_account" in st.secrets:
+    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+else:
     creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
-    client = gspread.authorize(creds)
-except Exception as e:
-    st.error(f"Gagal membaca file kunci di GitHub: {e}")
-    st.stop()
 
 SHEET_NAME = "Rekap Live"
 spreadsheet = client.open(SHEET_NAME)
@@ -234,6 +228,7 @@ elif menu == "⚙️ Setup System":
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
 
         st.markdown(html_s, unsafe_allow_html=True)
+
 
 
 
