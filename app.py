@@ -7,20 +7,9 @@ import plotly.express as px
 
 # --- CONFIGURASI GOOGLE SHEETS ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-
-# Menggunakan st.secrets untuk keamanan saat online
-if "gcp_service_account" in st.secrets:
-    creds_info = st.secrets["gcp_service_account"]
-    creds = Credentials.from_service_account_info(creds_info, scopes=scope)
-else:
-    # Cadangan untuk jalankan di laptop
-    try:
-        creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
-    except:
-        st.error("File credentials.json tidak ditemukan atau Secrets belum diatur!")
-        st.stop()
-
+creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
 client = gspread.authorize(creds)
+
 SHEET_NAME = "Rekap Live"
 spreadsheet = client.open(SHEET_NAME)
 worksheet_data = spreadsheet.worksheet("Data")
@@ -237,6 +226,4 @@ elif menu == "⚙️ Setup System":
         st.markdown("<h3>🏪 Daftar Toko</h3>", unsafe_allow_html=True)
         s_list = [s for s in worksheet_setup.col_values(2)[1:] if s]
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
-
         st.markdown(html_s, unsafe_allow_html=True)
-
