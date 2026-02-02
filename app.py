@@ -7,16 +7,18 @@ import plotly.express as px
 
 # --- CONFIGURASI GOOGLE SHEETS ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-# --- CONFIGURASI GOOGLE SHEETS ---
-scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
-# Logika baru: Cek apakah jalan di online (Secrets) atau laptop (File)
+# Menggunakan st.secrets untuk keamanan saat online
 if "gcp_service_account" in st.secrets:
     creds_info = st.secrets["gcp_service_account"]
     creds = Credentials.from_service_account_info(creds_info, scopes=scope)
 else:
-    # Ini buat cadangan kalau kamu jalankan di laptop lagi
-    creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+    # Cadangan untuk jalankan di laptop
+    try:
+        creds = Credentials.from_service_account_file("credentials.json", scopes=scope)
+    except:
+        st.error("File credentials.json tidak ditemukan atau Secrets belum diatur!")
+        st.stop()
 
 client = gspread.authorize(creds)
 SHEET_NAME = "Rekap Live"
@@ -237,3 +239,4 @@ elif menu == "⚙️ Setup System":
         html_s = '<div class="card-container">' + "".join([f'<div class="shop-card">{i}. {s} 🛍️</div>' for i, s in enumerate(s_list, 1)]) + '</div>'
 
         st.markdown(html_s, unsafe_allow_html=True)
+
